@@ -1,0 +1,242 @@
+{
+  "info": {
+    "name": "Biometric Service API",
+    "description": "API untuk pengenalan biometrik wajah dan vena telapak tangan.\n\nBase URL: http://localhost:5000/api/v1/biometric",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api/v1/biometric",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "item": [
+        {
+          "name": "Register Wajah",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "File gambar wajah (PNG/JPG/JPEG/BMP/TIFF)"
+                },
+                {
+                  "key": "type",
+                  "value": "face",
+                  "type": "text",
+                  "description": "Tipe biometrik: face"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": ["{{base_url}}"],
+              "path": ["register"]
+            },
+            "description": "Mendaftarkan data biometrik wajah baru ke database."
+          },
+          "response": []
+        },
+        {
+          "name": "Register Palm Vein",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "File gambar vena telapak tangan hitam putih (PNG/JPG/JPEG/BMP/TIFF)"
+                },
+                {
+                  "key": "type",
+                  "value": "palm",
+                  "type": "text",
+                  "description": "Tipe biometrik: palm"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": ["{{base_url}}"],
+              "path": ["register"]
+            },
+            "description": "Mendaftarkan data biometrik vena telapak tangan baru ke database."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoint untuk mendaftarkan data biometrik baru."
+    },
+    {
+      "name": "Compare",
+      "item": [
+        {
+          "name": "Compare Wajah",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "File gambar wajah untuk dibandingkan"
+                },
+                {
+                  "key": "type",
+                  "value": "face",
+                  "type": "text",
+                  "description": "Tipe biometrik: face"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/compare",
+              "host": ["{{base_url}}"],
+              "path": ["compare"]
+            },
+            "description": "Membandingkan gambar wajah dengan semua data wajah di database. Mengembalikan ID jika ditemukan."
+          },
+          "response": []
+        },
+        {
+          "name": "Compare Palm Vein",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "File gambar vena telapak tangan untuk dibandingkan"
+                },
+                {
+                  "key": "type",
+                  "value": "palm",
+                  "type": "text",
+                  "description": "Tipe biometrik: palm"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/compare",
+              "host": ["{{base_url}}"],
+              "path": ["compare"]
+            },
+            "description": "Membandingkan gambar vena telapak tangan dengan semua data palm di database. Mengembalikan ID jika ditemukan."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoint untuk membandingkan gambar biometrik dengan database."
+    },
+    {
+      "name": "Data Management",
+      "item": [
+        {
+          "name": "List Semua Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Mendapatkan daftar semua data biometrik yang terdaftar."
+          },
+          "response": []
+        },
+        {
+          "name": "List Data by Type (Face)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/?type=face",
+              "host": ["{{base_url}}"],
+              "path": [""],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "face",
+                  "description": "Filter tipe: face atau palm"
+                }
+              ]
+            },
+            "description": "Mendapatkan daftar data biometrik yang difilter berdasarkan tipe wajah."
+          },
+          "response": []
+        },
+        {
+          "name": "List Data by Type (Palm)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/?type=palm",
+              "host": ["{{base_url}}"],
+              "path": [""],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "palm",
+                  "description": "Filter tipe: face atau palm"
+                }
+              ]
+            },
+            "description": "Mendapatkan daftar data biometrik yang difilter berdasarkan tipe palm."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Detail by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/1",
+              "host": ["{{base_url}}"],
+              "path": ["1"]
+            },
+            "description": "Mendapatkan detail data biometrik berdasarkan ID. Ganti angka 1 dengan ID yang diinginkan."
+          },
+          "response": []
+        },
+        {
+          "name": "Hapus Data by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/1",
+              "host": ["{{base_url}}"],
+              "path": ["1"]
+            },
+            "description": "Menghapus data biometrik berdasarkan ID. Ganti angka 1 dengan ID yang ingin dihapus."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoint untuk melihat dan menghapus data biometrik."
+    }
+  ]
+}
