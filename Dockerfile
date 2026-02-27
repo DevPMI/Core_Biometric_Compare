@@ -25,5 +25,6 @@ RUN mkdir -p uploads
 # Expose port
 EXPOSE 5000
 
-# Jalankan aplikasi
-CMD ["python", "run.py"]
+# Jalankan aplikasi dengan Gunicorn
+# Menggunakan 4 worker untuk concurrency, timeout 120 detik untuk proses biometrik yang berat
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "--timeout", "120", "run:app"]
