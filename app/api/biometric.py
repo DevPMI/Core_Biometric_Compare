@@ -26,6 +26,8 @@ from app.services.face_service import (
     compare_face_embeddings,
     serialize_embedding,
 )
+from app.services.liveness_service import check_liveness
+
 from app.services.palm_service import (
     extract_palm_features,
     compare_palm_features,
@@ -244,8 +246,20 @@ def compare_biometric():
         # Resize gambar untuk mempercepat proses deteksi wajah di CPU
         img = _resize_image(img, max_dim=640)
 
+        # Cek Liveness (Anti-Spoofing) khusus untuk Wajah  <-- NEW
+        if biometric_type == 'face':
+            is_real, liveness_score = check_liveness(img)
+            if not is_real:
+                logger.warning(f"Spoofing terdeteksi pada /compare. Liveness score: {liveness_score:.2f}")
+                return error_response(
+                    message="Pemalsuan Wajah (Spoofing) Terdeteksi! Mohon gunakan wajah manusia asli depan kamera.",
+                    status_code=400,
+                    errors={"liveness_score": round(liveness_score, 4)}
+                )
+
         # Ekstrak fitur dari gambar (numpy array)
         input_features = _extract_features(img, biometric_type)
+
         
         if input_features is None:
             return error_response(
@@ -311,8 +325,28 @@ def register_biometric():
         )
 
     try:
+        # Baca gambar menggunakan OpenCV NumPy untuk dicek Live/Spoof 
+        file_bytes = np.frombuffer(open(filepath, "rb").read(), np.uint8)
+        img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        img = _resize_image(img, max_dim=640)
+
+        # Cek Liveness khusus wajah  <-- NEW
+        if biometric_type == 'face':
+            is_real, liveness_score = check_liveness(img)
+            if not is_real:
+                # Karena gagal, file gambar palsu yang terlanjur disave kita buang lagi
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                logger.warning(f"Spoofing terdeteksi pada /register. Liveness score: {liveness_score:.2f}")
+                return error_response(
+                    message="Pemalsuan Wajah (Spoofing) Terdeteksi! Registrasi ditolak, mohon gunakan wajah manusia asli.",
+                    status_code=400,
+                    errors={"liveness_score": round(liveness_score, 4)}
+                )
+
         # Ekstrak fitur dari gambar
         features = _extract_features(filepath, biometric_type)
+
         if features is None:
             # Hapus file jika gagal
             if os.path.exists(filepath):
